@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Anonymous Pro', monospace;
+            margin: 40px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+        h1 {
+            text-align: center;
+        }
+        .status-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-item {
+            flex: 1;
+            margin: 10px;
+        }
+        .status-item span {
+            font-weight: bold;
+        }
+        .status-bar-container {
+            width: 100%;
+            background-color: #d5ecff;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .status-bar {
+            height: 20px;
+            border-radius: 5px;
+        }
+        .cpu-bar {
+            background-color: #e49eff;
+        }
+        .memory-bar {
+            background-color: #98bbfa;
+        }
+        .network-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CCO::STATUS (x.x.1.38)</h1>
+        <div class="status-container">
+            <div class="status-item">
+                <span>Uptime:</span> <span id="uptime">Loading...</span> Seconds
+            </div>
+            <div class="status-item">
+                <span>CPU Usage:</span> <span id="cpu-usage">Loading...</span>%
+                <div class="status-bar-container">
+                    <div class="status-bar cpu-bar" id="cpu-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+            <div class="status-item">
+                <span>Memory Usage:</span> <span id="memory-usage">Loading...</span>%
+                <div class="status-bar-container">
+                    <div class="status-bar memory-bar" id="memory-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="network-info">
+            <span>Tracking from:</span> <span id="ip-address">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/status');
+            const data = await response.json();
+
+            document.getElementById('uptime').innerText = data.uptime;
+            document.getElementById('cpu-usage').innerText = data.cpu_usage.toFixed(2);
+            document.getElementById('memory-usage').innerText = data.memory_usage.toFixed(2);
+
+            document.getElementById('cpu-bar').style.width = data.cpu_usage + '%';
+            document.getElementById('memory-bar').style.width = data.memory_usage + '%';
+            document.getElementById('ip-address').innerText = data.ip_address;
+        }
+
+        setInterval(fetchData, 1000);
+        fetchData();
+    </script>
+</body>
+</html>
